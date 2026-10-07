@@ -132,8 +132,14 @@
   <span>Profile</span>
 </a>
 
+        <!-- Dorm Groups -->
+        <a href="{{ route('admin.dorm-groups.index') }}" class="flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#1a2c63] text-sm font-normal transition duration-150">
+          <i class="fa-solid fa-bed w-4 text-center"></i>
+          <span>Dorm Groups</span>
+        </a>
+
         <!-- Student Information -->
-        <a href="#" class="flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#1a2c63] text-sm font-normal transition duration-150">
+        <a href="{{ route('admin.students.index') }}" class="flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#1a2c63] text-sm font-normal transition duration-150">
           <i class="fa-solid fa-users w-4 text-center"></i>
           <span>Student Information</span>
         </a>

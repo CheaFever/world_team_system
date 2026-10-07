@@ -1,7 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\DormGroupController;
+use App\Http\Controllers\MeetingSundayController;
+use App\Http\Controllers\StudentController;
+use Illuminate\Support\Facades\Route;
+
+Route::resource('meeting-sunday', MeetingSundayController::class);
 
 // បញ្ជូនពីទំព័រដើម (Root URL) ទៅកាន់ទំព័រ Login របស់ Admin ដោយស្វ័យប្រវត្តិ
 Route::get('/', function () {
@@ -21,14 +26,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // សម្រាប់ Admin ដែលបាន Login រួច (Protected Routes)
     Route::middleware('auth:admin')->group(function () {
         Route::get('/dashboard', [AdminAuthController::class, 'dashboard'])->name('dashboard');
-         // --- ROUTES សម្រាប់ PROFILE ---
+        // --- ROUTES សម្រាប់ PROFILE ---
         Route::get('/profile', [AdminAuthController::class, 'profile'])->name('profile');
         Route::post('/profile/update', [AdminAuthController::class, 'updateProfile'])->name('profile.update');
 
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
+        // Dormitory Group Management (protected)
+        Route::resource('dorm-groups', DormGroupController::class);
+
+        // Student Registration Management (protected)
+        Route::resource('students', StudentController::class);
+
     });
 });
-use App\Http\Controllers\MeetingSundayController;
-
-Route::resource('meeting-sunday', MeetingSundayController::class);
