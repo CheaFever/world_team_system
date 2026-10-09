@@ -40,3 +40,21 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     });
 });
+use App\Http\Controllers\NotificationController;
+
+Route::post('/admin/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('admin.notifications.markAsRead');
+use App\Http\Controllers\MeetingSundayAttendanceController;
+
+Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(function () {
+    // បង្ហាញទំព័រ Meeting of Sunday
+    Route::get('/meeting-sunday', [MeetingSundayAttendanceController::class, 'index'])->name('meeting-sunday.index');
+    
+    // Update តែវត្តមានសិស្ស
+    Route::put('/meeting-sunday/{student}/attendance', [MeetingSundayAttendanceController::class, 'updateAttendance'])->name('meeting-sunday.update-attendance');
+});
+// Route សម្រាប់ Form Update វត្តមានសិស្ស (ចាំបាច់ត្រូវមាន)
+Route::put('/meeting-sunday/students/{student}/attendance', [MeetingSundayController::class, 'updateStudentAttendance'])
+    ->name('meeting-sunday.students.attendance');
+
+// Route ដើមរបស់អ្នក
+Route::resource('meeting-sunday', MeetingSundayController::class);
