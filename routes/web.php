@@ -13,6 +13,7 @@ Route::get('/', function () {
     return redirect()->route('admin.login');
 });
 
+
 Route::prefix('admin')->name('admin.')->group(function () {
     // សម្រាប់ Admin ដែលមិនទាន់ Login (ការពារមិនឱ្យ Admin ដែល Login រួចចូលទំព័រនេះទៀត)
     Route::middleware('guest:admin')->group(function () {
@@ -58,3 +59,14 @@ Route::put('/meeting-sunday/students/{student}/attendance', [MeetingSundayContro
 
 // Route ដើមរបស់អ្នក
 Route::resource('meeting-sunday', MeetingSundayController::class);
+
+use App\Http\Controllers\EventController;
+
+// ជម្រើសទី ១៖ ប្រើប្រាស់ Route Resource (បង្កើត routes ទាំងអស់៖ index, create, store, show, edit, update, destroy តែម្ដង)
+Route::resource('events', EventController::class);
+
+// (ប្រសិនបើចង់ការពារដោយ Login អាចប្រើ middleware auth):
+// Route::middleware(['auth'])->group(function () {
+//     Route::resource('events', EventController::class);
+// });
+

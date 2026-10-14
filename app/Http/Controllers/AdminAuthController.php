@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
@@ -71,10 +72,8 @@ class AdminAuthController extends Controller
 
         // ផ្ទៀងផ្ទាត់ការ Login តាមរយៈ Guard admin
         if (Auth::guard('admin')->attempt($credentials, $request->boolean('remember'))) {
-            // សម្អាត Rate Limiter ពេល Login ជោគជ័យ
             RateLimiter::clear($throttleKey);
 
-            // បង្កើត Session ID ថ្មីដើម្បីការពារ Session Fixation Attack
             $request->session()->regenerate();
 
             return redirect()->intended(route('admin.dashboard'));
@@ -103,12 +102,12 @@ class AdminAuthController extends Controller
     {
         Auth::guard('admin')->logout();
 
-        // សម្អាត Session ទិន្នន័យចាស់ទាំងអស់
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect()->route('admin.login')->with('success', 'អ្នកបានចាកចេញដោយជោគជ័យ!');
     }
+
     // បង្ហាញទំព័រ Profile របស់ Admin
     public function profile()
     {
@@ -116,7 +115,7 @@ class AdminAuthController extends Controller
         return view('admin.profile', compact('admin'));
     }
 
-    // ដំណើរការកែប្រែព័ត៌មាន Profile
+    // ដំណើរការកែប្រែព័ត៌មាន Profile និង Upload រូបភាព
     public function updateProfile(Request $request)
     {
         /** @var \App\Models\Admin $admin */
@@ -129,8 +128,30 @@ class AdminAuthController extends Controller
             'gender'    => 'nullable|in:male,female,other',
             'dob'       => 'nullable|date',
             'address'   => 'nullable|string|max:500',
-            'password'  => 'nullable|string|min:6|confirmed', // វាយលុះត្រាតែចង់ប្តូរ Password ថ្មី
+            'image'     => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'password'  => 'nullable|string|min:6|confirmed',
         ]);
+
+        // Upload រូបភាព និងលុបរូបភាពចាស់ចេញ
+        if ($request->hasFile('image')) {
+            $destinationPath = public_path('uploads/admins');
+
+            // បង្កើត folder បើមិនទាន់មាន
+            if (!File::isDirectory($destinationPath)) {
+                File::makeDirectory($destinationPath, 0755, true, true);
+            }
+
+            // លុបរូបភាពចាស់ចេញបើមាន file នៅលើ Server
+            if ($admin->image && File::exists($destinationPath . '/' . $admin->image)) {
+                File::delete($destinationPath . '/' . $admin->image);
+            }
+
+            $file = $request->file('image');
+            $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $file->move($destinationPath, $filename);
+
+            $admin->image = $filename;
+        }
 
         $admin->full_name = strip_tags($validated['full_name']);
         $admin->username  = trim($validated['username']);
@@ -139,7 +160,7 @@ class AdminAuthController extends Controller
         $admin->dob       = $validated['dob'] ?? null;
         $admin->address   = isset($validated['address']) ? strip_tags($validated['address']) : null;
 
-        // បើមានបញ្ចូល Password ថ្មី ទើបធ្វើការ Update
+        // Update Password ថ្មីប្រសិនបើមានបញ្ចូល
         if ($request->filled('password')) {
             $admin->password = Hash::make($validated['password']);
         }

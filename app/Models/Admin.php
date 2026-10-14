@@ -20,6 +20,7 @@ class Admin extends Authenticatable
         'phone',
         'address',
         'password',
+        'image', // បន្ថែមត្រង់នេះ
     ];
 
     protected $hidden = [

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdminNotification;
 use App\Models\DormGroup;
 use App\Models\Student;
 use Illuminate\Http\Request;
@@ -67,6 +68,14 @@ class StudentController extends Controller
             $student->dormGroup->syncStudentCount();
         }
 
+        // កត់ត្រា Notification ពេលបញ្ចូលសិស្សថ្មី
+        AdminNotification::create([
+            'title'   => 'សិស្សថ្មីត្រូវបានបញ្ចូល',
+            'message' => "បានបញ្ចូលសិស្សឈ្មោះ {$student->name_khmer} (ID: {$student->student_ID})",
+            'type'    => 'created',
+            'is_read' => false,
+        ]);
+
         return redirect()->route('admin.students.index')->with('success', 'Student registered successfully.');
     }
 
@@ -112,12 +121,22 @@ class StudentController extends Controller
             $student->dormGroup->syncStudentCount();
         }
 
+        // កត់ត្រា Notification ពេលកែសម្រួលព័ត៌មានសិស្ស
+        AdminNotification::create([
+            'title'   => 'ទិន្នន័យសិស្សត្រូវបានកែប្រែ',
+            'message' => "បានកែប្រែព័ត៌មានសិស្ស {$student->name_khmer} (ID: {$student->student_ID})",
+            'type'    => 'updated',
+            'is_read' => false,
+        ]);
+
         return redirect()->route('admin.students.index')->with('success', 'Student updated successfully.');
     }
 
     public function destroy(Student $student)
     {
         $group = $student->dormGroup;
+        $studentName = $student->name_khmer;
+        $studentId   = $student->student_ID;
 
         if ($student->profile_image) {
             Storage::disk('public')->delete($student->profile_image);
@@ -127,6 +146,14 @@ class StudentController extends Controller
 
         // Keep the old group's counter in sync
         $group?->syncStudentCount();
+
+        // កត់ត្រា Notification ពេលលុបសិស្ស
+        AdminNotification::create([
+            'title'   => 'សិស្សត្រូវបានលុប',
+            'message' => "បានលុបសិស្សឈ្មោះ {$studentName} (ID: {$studentId}) ចេញពីប្រព័ន្ធ",
+            'type'    => 'deleted',
+            'is_read' => false,
+        ]);
 
         return redirect()->route('admin.students.index')->with('success', 'Student deleted successfully.');
     }

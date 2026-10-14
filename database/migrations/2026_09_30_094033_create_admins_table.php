@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('full_name');
             $table->string('username')->unique();
+            $table->string('image')->nullable(); // បន្ថែមត្រង់នេះ
             $table->enum('gender', ['male', 'female', 'other'])->nullable();
             $table->date('dob')->nullable(); // Date of Birth
             $table->string('phone')->nullable();

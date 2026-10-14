@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WT Western Technology - Dashboard</title>
+  <title>WT World Team Dom - Dashboard</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -61,6 +61,12 @@
 </head>
 <body class="bg-[#f8fafc] text-slate-800 antialiased min-h-screen flex overflow-x-hidden">
 
+  @php
+    $currentAdmin = Auth::guard('admin')->user();
+    $unreadCount = \App\Models\AdminNotification::where('is_read', false)->count();
+    $recentNotifications = \App\Models\AdminNotification::latest()->take(5)->get();
+  @endphp
+
   <!-- MOBILE SIDEBAR BACKDROP OVERLAY -->
   <div 
     id="sidebarBackdrop" 
@@ -75,36 +81,24 @@
     <!-- Top Branding & Navigation -->
     <div class="p-5 flex flex-col gap-5 overflow-y-auto">
       
-      <!-- Brand Logo, Name & Interactive Image Changer -->
+      <!-- Brand Logo & Name -->
       <div class="flex items-center justify-between px-1 pt-1">
         <div class="flex items-center gap-3">
-          <!-- Logo container with file picker -->
-          <div class="relative group cursor-pointer" title="ចុចដើម្បីប្តូរ Logo">
-            <input 
-              type="file" 
-              id="logoFileInput" 
-              accept="image/*" 
-              class="hidden" 
+          <div class="w-11 h-11 rounded-full bg-white flex items-center justify-center p-0.5 shadow-sm overflow-hidden border-2 border-white/80">
+            <img 
+              id="schoolLogoImg" 
+              src="{{ asset('images/Logo WT.png') }}" 
+              alt="WT Logo" 
+              class="w-full h-full object-cover rounded-full"
+              onerror="this.onerror=null; this.src='https://placehold.co/100x100/101c42/ffffff?text=WT';"
             />
-            <div class="w-11 h-11 rounded-full bg-white flex items-center justify-center p-0.5 shadow-sm overflow-hidden border-2 border-white/80 group-hover:border-blue-400 transition-all">
-              <img 
-                id="schoolLogoImg" 
-                src="{{ asset('images/Logo WT.png') }}" 
-                alt="WT Logo" 
-                class="w-full h-full object-cover rounded-full"
-                onerror="this.onerror=null; this.src='https://placehold.co/100x100/101c42/ffffff?text=WT';"
-              />
-            </div>
-            <div class="absolute -bottom-1 -right-1 bg-blue-500 hover:bg-blue-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[9px] shadow border border-[#101c42]">
-              <i class="fa-solid fa-camera"></i>
-            </div>
           </div>
 
           <div>
             <div class="flex items-center gap-1.5">
               <h1 class="text-sm font-bold tracking-wide leading-tight text-white">WT</h1>
             </div>
-            <p class="text-[13px] font-semibold text-slate-100 leading-tight">Western Technology</p>
+            <p class="text-[13px] font-semibold text-slate-100 leading-tight">World Team Dom</p>
             <p class="text-[10px] text-slate-400 font-normal">Build Your Future</p>
           </div>
         </div>
@@ -121,16 +115,16 @@
       <!-- Navigation Menu -->
       <nav class="flex flex-col gap-1.5 mt-1">
         <!-- Dashboard (Active) -->
-        <a href="#" class="flex items-center gap-3.5 px-4 py-2.5 rounded-xl bg-[#3b82f6] text-white text-sm font-medium shadow-sm transition">
+        <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3.5 px-4 py-2.5 rounded-xl bg-[#3b82f6] text-white text-sm font-medium shadow-sm transition">
           <i class="fa-solid fa-house w-4 text-center"></i>
           <span>Dashboard</span>
         </a>
 
         <!-- Profile -->
-      <a href="{{ route('admin.profile') }}" class="flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#1a2c63] text-sm transition">
-  <i class="fa-regular fa-user w-4 text-center"></i>
-  <span>Profile</span>
-</a>
+        <a href="{{ route('admin.profile') }}" class="flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#1a2c63] text-sm transition">
+          <i class="fa-regular fa-user w-4 text-center"></i>
+          <span>Profile</span>
+        </a>
 
         <!-- Dorm Groups -->
         <a href="{{ route('admin.dorm-groups.index') }}" class="flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#1a2c63] text-sm font-normal transition duration-150">
@@ -145,25 +139,25 @@
         </a>
 
         <!-- Meeting of Sunday -->
-        <a href="#" class="flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#1a2c63] text-sm font-normal transition duration-150">
+        <a href="{{ route('meeting-sunday.index') }}" class="flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#1a2c63] text-sm font-normal transition duration-150">
           <i class="fa-regular fa-calendar w-4 text-center"></i>
           <span>Meeting of Sunday</span>
         </a>
 
         <!-- Meeting of Monday to Wednesday -->
-        <a href="#" class="flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#1a2c63] text-sm font-normal transition duration-150">
+        <a href="{{ route('meeting-sunday.index') }}" class="flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#1a2c63] text-sm font-normal transition duration-150">
           <i class="fa-regular fa-calendar-days w-4 text-center"></i>
           <span>Meeting of Monday to Wednesday</span>
         </a>
 
         <!-- Meeting of Saturday & Sunday -->
-        <a href="#" class="flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#1a2c63] text-sm font-normal transition duration-150">
+        <a href="{{ route('meeting-sunday.index') }}" class="flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#1a2c63] text-sm font-normal transition duration-150">
           <i class="fa-regular fa-calendar-check w-4 text-center"></i>
           <span>Meeting of Saturday & Sunday</span>
         </a>
 
         <!-- Events -->
-        <a href="#" class="flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#1a2c63] text-sm font-normal transition duration-150">
+        <a href="{{ route('events.index') }}" class="flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#1a2c63] text-sm font-normal transition duration-150">
           <i class="fa-regular fa-calendar-plus w-4 text-center"></i>
           <span>Events</span>
         </a>
@@ -217,16 +211,61 @@
 
       <!-- Right: Notifications & Admin Profile Section -->
       <div class="flex items-center gap-3 sm:gap-5">
-        <!-- Notification icon -->
-        <button class="relative text-slate-600 hover:text-slate-900 transition p-2 rounded-full hover:bg-slate-50" aria-label="Notifications">
-          <i class="fa-regular fa-bell text-base sm:text-lg"></i>
-          <span class="absolute top-1 right-1 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">
-            0
-          </span>
-        </button>
+        
+        <!-- DYNAMIC NOTIFICATION SECTION -->
+        <div class="relative">
+          <button 
+            id="notifBtn" 
+            class="relative text-slate-600 hover:text-slate-900 transition p-2 rounded-full hover:bg-slate-50 focus:outline-none" 
+            aria-label="Notifications"
+          >
+            <i class="fa-regular fa-bell text-base sm:text-lg"></i>
+            
+            <!-- បង្ហាញ Badge លេខក្រហមតែពេលមានដំណឹងមិនទាន់អាន -->
+            <span 
+              id="notifBadge" 
+              class="{{ $unreadCount > 0 ? '' : 'hidden' }} absolute top-1 right-1 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white"
+            >
+              {{ $unreadCount }}
+            </span>
+          </button>
 
-        <!-- Hidden Input សម្រាប់ Upload រូបភាព Admin Profile -->
-        <input type="file" id="adminProfileFileInput" accept="image/*" class="hidden">
+          <!-- Notification Dropdown Menu -->
+          <div 
+            id="notifDropdown" 
+            class="hidden absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50 transition-all"
+          >
+            <div class="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-800">Notifications</span>
+              <span class="text-[10px] bg-blue-50 text-blue-600 font-semibold px-2 py-0.5 rounded-full">
+                ថ្មីៗ
+              </span>
+            </div>
+
+            <div class="max-h-64 overflow-y-auto divide-y divide-slate-100">
+              @forelse($recentNotifications as $notif)
+                <div class="p-3 hover:bg-slate-50 transition text-left">
+                  <div class="flex items-center gap-2">
+                    @if($notif->type === 'created')
+                      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    @elseif($notif->type === 'updated')
+                      <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                    @else
+                      <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                    @endif
+                    <p class="text-xs font-semibold text-slate-800">{{ $notif->title }}</p>
+                  </div>
+                  <p class="text-[11px] text-slate-600 mt-1 pl-4">{{ $notif->message }}</p>
+                  <span class="text-[9px] text-slate-400 mt-1 pl-4 block">{{ $notif->created_at->diffForHumans() }}</span>
+                </div>
+              @empty
+                <div class="p-4 text-center text-xs text-slate-400">
+                  មិនមានដំណឹងថ្មីទេ
+                </div>
+              @endforelse
+            </div>
+          </div>
+        </div>
 
         <!-- Admin Profile Dropdown Button -->
         <div class="relative">
@@ -234,33 +273,25 @@
             id="adminDropdownTrigger" 
             class="flex items-center gap-2.5 cursor-pointer group p-1.5 rounded-full hover:bg-slate-100 transition select-none"
           >
-            <!-- Profile Avatar with Camera Icon Overlay -->
-            <div 
-              class="relative w-9 h-9 rounded-full ring-2 ring-blue-500/30 overflow-hidden bg-slate-200 flex items-center justify-center shadow-inner group-hover:ring-blue-500 transition"
-              title="ចុចត្រង់នេះដើម្បីប្តូររូបភាព Profile (Click to change avatar)"
-              onclick="event.stopPropagation(); document.getElementById('adminProfileFileInput').click();"
-            >
-              <img 
-                id="adminProfileImg" 
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80" 
-                alt="Admin Photo" 
-                class="w-full h-full object-cover"
-                onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');"
-              />
-              <div class="hidden w-full h-full bg-slate-200 text-slate-600 flex items-center justify-center text-sm font-semibold">
-                <i class="fa-solid fa-user"></i>
-              </div>
-
-              <!-- Camera Badge hover -->
-              <div class="absolute inset-0 bg-black/40 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-150">
-                <i class="fa-solid fa-camera text-[10px]"></i>
-              </div>
+            <!-- Dynamic Profile Avatar -->
+            <div class="w-9 h-9 rounded-full ring-2 ring-blue-500/30 overflow-hidden bg-slate-200 flex items-center justify-center shadow-inner group-hover:ring-blue-500 transition">
+              @if($currentAdmin && $currentAdmin->image && file_exists(public_path('uploads/admins/' . $currentAdmin->image)))
+                <img 
+                  src="{{ asset('uploads/admins/' . $currentAdmin->image) }}" 
+                  alt="Admin Photo" 
+                  class="w-full h-full object-cover"
+                />
+              @else
+                <div class="w-full h-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">
+                  {{ strtoupper(substr($currentAdmin->username ?? 'A', 0, 1)) }}
+                </div>
+              @endif
             </div>
 
-            <!-- Admin Real Name from Laravel Session/Auth -->
+            <!-- Admin Full Name / Username -->
             <div class="hidden sm:flex flex-col text-left">
               <span class="text-xs sm:text-sm font-bold text-slate-800 leading-tight">
-                {{ Auth::user()->name ?? Auth::user()->username ?? session('username') ?? 'Admin' }}
+                {{ $currentAdmin->full_name ?? $currentAdmin->username ?? 'Administrator' }}
               </span>
               <span class="text-[10px] text-slate-400 font-medium">Administrator</span>
             </div>
@@ -275,26 +306,17 @@
           >
             <div class="px-4 py-2 border-b border-slate-100">
               <p class="text-xs font-semibold text-slate-800 truncate">
-                {{ Auth::user()->name ?? Auth::user()->username ?? session('username') ?? 'Admin' }}
+                {{ $currentAdmin->full_name ?? $currentAdmin->username ?? 'Administrator' }}
               </p>
               <p class="text-[11px] text-slate-400 truncate">
-                {{ Auth::user()->email ?? 'admin@wt.edu.kh' }}
+                #ADM-{{ str_pad($currentAdmin->id ?? 1, 4, '0', STR_PAD_LEFT) }}
               </p>
             </div>
 
-            <button 
-              type="button" 
-              onclick="document.getElementById('adminProfileFileInput').click();"
-              class="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 transition"
-            >
-              <i class="fa-solid fa-camera text-blue-500"></i>
-              <span>Change Profile Picture</span>
-            </button>
-
-           <a href="{{ route('admin.profile') }}" class="px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 transition">
-  <i class="fa-regular fa-user text-slate-400"></i>
-  <span>My Profile</span>
-</a>
+            <a href="{{ route('admin.profile') }}" class="px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 transition">
+              <i class="fa-regular fa-user text-slate-400"></i>
+              <span>My Profile</span>
+            </a>
 
             <div class="border-t border-slate-100 my-1"></div>
 
@@ -322,9 +344,8 @@
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Dashboard</h2>
-          <!-- Show Logged In Name -->
           <p class="text-sm sm:text-base font-semibold text-slate-800 mt-0.5 sm:mt-1">
-            Welcome back, <span class="text-blue-600 font-bold">{{ Auth::user()->name ?? Auth::user()->username ?? session('username') ?? 'Admin' }}</span>!
+            Welcome back, <span class="text-blue-600 font-bold">{{ $currentAdmin->full_name ?? $currentAdmin->username ?? 'Admin' }}</span>!
           </p>
           <p class="text-xs text-slate-400 mt-0.5">Here is an overview of your system.</p>
         </div>
@@ -336,7 +357,9 @@
           </div>
           <div>
             <p class="text-[11px] font-medium text-slate-400">Today</p>
-            <p class="text-xs sm:text-sm font-bold text-slate-800" id="currentDateDisplay">October 1, 2026</p>
+            <p class="text-xs sm:text-sm font-bold text-slate-800" id="currentDateDisplay">
+              {{ date('F j, Y') }}
+            </p>
           </div>
         </div>
       </div>
@@ -483,60 +506,40 @@
       });
     }
 
-    // --- Interactive Admin Profile Upload & Preview ---
-    const adminProfileFileInput = document.getElementById('adminProfileFileInput');
-    const adminProfileImg = document.getElementById('adminProfileImg');
+    // --- Notification Dropdown & Mark as Read Logic ---
+    const notifBtn = document.getElementById('notifBtn');
+    const notifDropdown = document.getElementById('notifDropdown');
+    const notifBadge = document.getElementById('notifBadge');
 
-    if (adminProfileFileInput && adminProfileImg) {
-      adminProfileFileInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function(event) {
-            adminProfileImg.src = event.target.result;
-            adminProfileImg.style.display = 'block';
-            
-            // រក្សាទុករូបភាពក្នុង LocalStorage សម្រាប់មើលភ្លាមៗ
-            try {
-              localStorage.setItem('adminCustomAvatar', event.target.result);
-            } catch (err) {
-              console.log('Avatar image storage limit reached');
+    if (notifBtn && notifDropdown) {
+      notifBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isHidden = notifDropdown.classList.contains('hidden');
+        notifDropdown.classList.toggle('hidden');
+
+        // ប្រសិនបើបើកមើលដំណឹង ហើយមានលេខ badge បង្ហាញ
+        if (isHidden && notifBadge && !notifBadge.classList.contains('hidden')) {
+          fetch("{{ route('admin.notifications.markAsRead') }}", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-TOKEN": "{{ csrf_token() }}"
             }
-          };
-          reader.readAsDataURL(file);
+          })
+          .then(res => res.json())
+          .then(data => {
+            notifBadge.classList.add('hidden');
+            notifBadge.innerText = '0';
+          })
+          .catch(err => console.error(err));
         }
       });
 
-      // Load avatar ពី LocalStorage បើធ្លាប់ Upload
-      const savedAvatar = localStorage.getItem('adminCustomAvatar');
-      if (savedAvatar) {
-        adminProfileImg.src = savedAvatar;
-      }
-    }
-
-    // --- Logo Image Changer Logic ---
-    const logoContainer = document.querySelector('.group.cursor-pointer');
-    const logoFileInput = document.getElementById('logoFileInput');
-    const schoolLogoImg = document.getElementById('schoolLogoImg');
-
-    if (logoContainer && logoFileInput) {
-      logoContainer.addEventListener('click', () => logoFileInput.click());
-      logoFileInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function(event) {
-            schoolLogoImg.src = event.target.result;
-            try {
-              localStorage.setItem('customSchoolLogo', event.target.result);
-            } catch (err) {}
-          };
-          reader.readAsDataURL(file);
+      document.addEventListener('click', (e) => {
+        if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
+          notifDropdown.classList.add('hidden');
         }
       });
-
-      const savedLogo = localStorage.getItem('customSchoolLogo');
-      if (savedLogo) schoolLogoImg.src = savedLogo;
     }
   </script>
 </body>
